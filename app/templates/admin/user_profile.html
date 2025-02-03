@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>User Profile</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>First Name:</strong> {{ user.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+    <p><strong>Admin:</strong> {{ "Yes" if user.is_admin else "No" }}</p>
+    <a href="{{ url_for('admin_panel.user_list') }}" class="btn btn-secondary">Back to User List</a>
+</div>
+{% endblock %}
