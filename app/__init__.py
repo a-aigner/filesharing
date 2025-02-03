@@ -26,17 +26,13 @@ def create_app():
     # Import and Register Blueprints
     from app.routes.auth import auth_bp
     from app.routes.home import home_bp
-    # from app.routes.files import files_bp
     from app.routes.projects import projects_bp
-    # from app.routes.share import share_bp
     from app.routes.admin import admin_bp
     from app.routes.profile import profile_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(home_bp)
-    # app.register_blueprint(files_bp, url_prefix='/files')
     app.register_blueprint(projects_bp, url_prefix='/projects')
-    # app.register_blueprint(share_bp, url_prefix='/share')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(profile_bp, url_prefix='/profile')
 
