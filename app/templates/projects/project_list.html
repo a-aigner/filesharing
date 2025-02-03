@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Your Projects</h2>
+
+    <!-- Search Bar & Add Project Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form method="GET" action="{{ url_for('projects.list_projects') }}" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search projects..." value="{{ search_query }}" style="width: 200px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> <!-- Magnifying Glass Icon -->
+            </button>
+        </form>
+        <a href="{{ url_for('projects.create_project') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add Project
+        </a>
+    </div>
+
+    {% for project in projects.items %}
+    <div class="card shadow p-4 mb-4">
+        <h4>
+            <a href="{{ url_for('projects.project_detail', project_id=project.id) }}">{{ project.name }}</a>
+        </h4>
+        <p>Created on: {{ project.created_at.strftime('%Y-%m-%d') }}</p>
+
+        {% set project_files = project.files[:5] %}
+        {% if project_files %}
+        <ul>
+            {% for file in project_files %}
+                <li>
+                    {{ file.filename }}
+                    <a href="{{ url_for('projects.download_file', file_id=file.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </li>
+            {% endfor %}
+            {% if project.files|length > 5 %}
+                <li>...</li>
+            {% endif %}
+        </ul>
+        {% else %}
+        <p>No files uploaded yet.</p>
+        {% endif %}
+
+        <div class="d-flex">
+            <a href="{{ url_for('projects.project_detail', project_id=project.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-pencil-alt"></i> Manage
+            </a>
+            <button class="btn btn-secondary" onclick="copyToClipboard('{{ request.host_url }}/projects/share/{{ project.access_key }}')">
+                <i class="fas fa-share-alt"></i> Share
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    <!-- Pagination -->
+    <nav>
+        <ul class="pagination">
+            {% if projects.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('projects.list_projects', page=projects.prev_num, search=search_query) }}">Previous</a></li>
+            {% endif %}
+            {% for page_num in projects.iter_pages() %}
+                {% if page_num %}
+                    <li class="page-item {% if projects.page == page_num %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('projects.list_projects', page=page_num, search=search_query) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if projects.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('projects.list_projects', page=projects.next_num, search=search_query) }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<!-- Copy to Clipboard Script -->
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert('Share link copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+}
+</script>
+{% endblock %}
